@@ -1,11 +1,15 @@
 import  { createSlice } from "@reduxjs/toolkit";
-import { uiActions } from "./ui-slice";
+//import { uiActions } from "./ui-slice";
 
 
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {items : [], totalQuantity:0 },
     reducers:{
+        replaceCart(state, actions){
+            state.totalQuantity = actions.payload.totalQuantity;
+            state.items= actions.payload.items;
+        },
         addItemsToCart(state,actions){
             state.totalQuantity++;
             const newItem =actions.payload;
@@ -37,45 +41,6 @@ const cartSlice = createSlice({
         }
     }
 })
-
-export const sendCartData = (cart) => {
-    return async (dispatch) => {
-        dispatch(uiActions.showNotification({
-            status: 'pending',
-            title:'sending...',
-            message: 'sending cart data'
-          }))
-        const sendRequest = async () => {
-            const response = await fetch('https://react-http-78b8b-default-rtdb.firebaseio.com/cart.json', 
-            {
-              method: 'PUT',
-              body: JSON.stringify(cart)
-            });
-          if(!response.ok){
-          //Here only one error can be handled. That is response is not 200. 
-          throw new Error('Sending Cart Data Failed')
-          }
-          const responseData = await response.json();
-        }
-        try{
-            await sendRequest();
-            dispatch(uiActions.showNotification({
-                status: 'success',
-                title:'Success!',
-                message: 'Succesfully sent cart data'
-            }))
-        }catch(error){
-            dispatch(uiActions.showNotification({
-                status: 'error',
-                title:'error...',
-                message: 'error in sending cart data'
-              }))
-        }
-    
-
-        
-    }
-}
 
 
 export const cartActions = cartSlice.actions;
